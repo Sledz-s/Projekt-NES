@@ -1,0 +1,1 @@
+Projekt pisania gry na NES od zera w C przy pomocy LLVM
