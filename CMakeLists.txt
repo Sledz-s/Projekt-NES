@@ -4,13 +4,15 @@ set(LLVM_MOS_PLATFORM nes-nrom)
 
 find_package(llvm-mos-sdk REQUIRED)
 
-project(nes_llvm_project C)
+project(nes_llvm_project C ASM)
 
 add_executable(rom.nes
     src/main.c
     src/chr.c
     src/lib/stdnes.c
+    src/header.s
 )
+
 
 # Generowanie assemblera z kodu C
 set(ASM_OUTPUT "${CMAKE_CURRENT_BINARY_DIR}/main.s")
