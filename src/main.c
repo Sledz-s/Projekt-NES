@@ -8,13 +8,50 @@ uint16_t camera_y __attribute__((section(".zp.bss")));
 uint8_t camera_scroll_x __attribute__((section(".zp.bss")));
 uint8_t camera_scroll_y __attribute__((section(".zp.bss")));
 
+uint8_t player_x __attribute__((section(".zp.bss")));
+uint8_t player_y __attribute__((section(".zp.bss")));
+
 volatile uint8_t nmi_ready = 0;
 volatile uint8_t current_color = 0x2A;
 volatile uint8_t update_palette = 0;
 
-uint8_t oam_buffer[256] __attribute__((aligned(256)));
+uint8_t oam_used = 0;
 
+//  ===================================================
+
+uint8_t oam_buffer[256] __attribute__((aligned(256)));
 sprite_data_t *oam = (sprite_data_t *)oam_buffer;
+
+const sprite_data_t metasprite[] = {
+    {.x=20, .y=19, .attribute=0, .tile_ID= 0x02},
+    {.x=20, .y=19+8, .attribute=0, .tile_ID= 0x03},
+    {.x=20+8, .y=19, .attribute=0, .tile_ID= 0x04},
+    {.x=20+8, .y=19+8, .attribute=0, .tile_ID= 0x05}
+};
+
+void draw_metasprite(uint16_t x, uint16_t y, const sprite_data_t *parts, uint8_t count) {
+    for (uint8_t i = 0; i < count; i++) {
+
+        if (oam_used >= 64)
+            return;
+
+        uint16_t sprite_x = x + parts[i].x;
+        uint16_t sprite_y = y + parts[i].y - 1;
+
+        if (sprite_x < 0 || sprite_x > 255)
+            continue;
+
+        if (sprite_y < 0 || sprite_y > 239)
+            continue;
+
+        oam[oam_used].y = (uint8_t)sprite_y;
+        oam[oam_used].tile_ID = parts[i].tile_ID;
+        oam[oam_used].attribute = parts[i].attribute;
+        oam[oam_used].x = (uint8_t)sprite_x;
+
+        oam_used++;
+    }
+}
 
 //  ===================================================
 // PPU stuff
@@ -63,34 +100,14 @@ void Reset(void) {
     current_color = 0x2A;
     update_palette = 1;
     
-    oam_clear();
-
-    // RAW OAM writes
-    oam[0].y = 19;
-    oam[0].tile_ID = 0x02;
-    oam[0].attribute = 0;
-    oam[0].x = 20;
-
-    oam[1].y = 19 + 8;
-    oam[1].tile_ID = 0x03;
-    oam[1].attribute = 0;
-    oam[1].x = 20;
-
-    oam[2].y = 19;
-    oam[2].tile_ID = 0x04;
-    oam[2].attribute = 0;
-    oam[2].x = 20 + 8;
-
-    oam[3].y = 19 + 8;
-    oam[3].tile_ID = 0x05;
-    oam[3].attribute = 0;
-    oam[3].x = 20 + 8;
-    
     // var reset
     camera_x = 0;
     camera_y = 0;
     camera_scroll_x = 0x02;
     camera_scroll_y = 0x02;
+
+    player_x = 40;
+    player_y = 40;
 }
 
 NMI {
@@ -131,7 +148,20 @@ int main(void) {
         while (!nmi_ready);
         nmi_ready = 0;
 
+        oam_clear();
+        oam_used = 0;
+
+        draw_metasprite(player_x, player_y, metasprite, 4);
+
         controller = read_controller_1();
+        
+        if (PRESS_RIGHT){
+            player_x++;
+        } else if (PRESS_LEFT) player_x--;
+
+        if (PRESS_DOWN){
+            player_y++;
+        } else if (PRESS_UP) player_y--;
 
         if (PRESSED_A) {
             current_color = 0x2B;
