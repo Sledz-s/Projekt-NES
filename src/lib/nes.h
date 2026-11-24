@@ -72,8 +72,9 @@
 
 #define PPU_MASK        (*(volatile uint8_t*)0x2001)
 #define PPU_STATUS      (*(volatile uint8_t*)0x2002)
-#define OAMADDR         (*(volatile uint8_t*)0x2003)
-#define OAMDATA         (*(volatile uint8_t*)0x2004)
+#define OAM_ADDR        (*(volatile uint8_t*)0x2003)
+#define OAM_DATA        (*(volatile uint8_t*)0x2004)
+#define OAM_DMA         (*(volatile uint8_t*)0x4014)
 #define PPU_SCROLL      (*(volatile uint8_t*)0x2005)
 #define PPU_ADDR        (*(volatile uint8_t*)0x2006)
 #define PPU_DATA        (*(volatile uint8_t*)0x2007)
