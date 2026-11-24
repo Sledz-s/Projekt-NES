@@ -6,80 +6,16 @@
 // Zero Page
 #define ZERO_PAGE_START ((volatile uint8_t*)0x0000)
 
-// PPU
-/**
- * @brief PPU Control Register (PPUCTRL)
- *
- * @details
- * Address: $2000
- * Access: Write-only
- * Size: 8 bits
- *
- * Controls the PPU operation, including NMI generation,
- * sprite size, pattern table selection, VRAM increment
- * and base nametable selection.
- *
- * Bit layout:
- *
- *   7  6  5  4  3  2  1  0
- *  +--+--+--+--+--+--+--+--+
- *  |V |P |H |B |S |I |N |N |
- *  +--+--+--+--+--+--+--+--+
- *
- * Bits:
- *
- * [7] V - NMI Enable
- *     0 = Disable NMI
- *     1 = Enable NMI at the beginning of VBlank
- *
- * [6] P - PPU Master/Slave Select
- *     0 = PPU operates in master mode
- *     1 = PPU operates in slave mode
- *
- * [5] H - Sprite Height
- *     0 = 8x8 pixels
- *     1 = 8x16 pixels
- *
- * [4] B - Background Pattern Table
- *     0 = $0000
- *     1 = $1000
- *
- * [3] S - Sprite Pattern Table
- *     0 = $0000
- *     1 = $1000
- *     Note: Ignored when sprites are 8x16 pixels.
- *
- * [2] I - VRAM Address Increment
- *     0 = Increment by 1 after PPUDATA access
- *     1 = Increment by 32 after PPUDATA access
- *
- * [1:0] N - Base Nametable Address
- *     00 = $2000
- *     01 = $2400
- *     10 = $2800
- *     11 = $2C00
- *
- * @note Writing to PPUCTRL updates the temporary VRAM
- *       address (t) nametable bits.
- *
- * @warning This register is write-only. Reading $2000
- *          does not return the stored PPUCTRL value.
- *
- * @see PPU_MASK
- * @see PPU_STATUS
- */
-#define PPU_CTRL        (*(volatile uint8_t*)0x2000)
+//  ============================================================ 
+//                             PPU
+//  ============================================================
 
+#define PPU_CTRL        (*(volatile uint8_t*)0x2000)
 #define PPU_MASK        (*(volatile uint8_t*)0x2001)
 #define PPU_STATUS      (*(volatile uint8_t*)0x2002)
-#define OAM_ADDR        (*(volatile uint8_t*)0x2003)
-#define OAM_DATA        (*(volatile uint8_t*)0x2004)
-#define OAM_DMA         (*(volatile uint8_t*)0x4014)
 #define PPU_SCROLL      (*(volatile uint8_t*)0x2005)
 #define PPU_ADDR        (*(volatile uint8_t*)0x2006)
 #define PPU_DATA        (*(volatile uint8_t*)0x2007)
-
-#define OAMDMA          (*(volatile uint8_t*)0x4014)
 
 #define PPU_CTRL_NMI_ENABLE       0x80
 #define PPU_CTRL_SPRITE_SIZE      0x20
@@ -97,16 +33,71 @@
 #define ENABLE_SRPITE   0x10
 #define ENABLE_BG       0x0A
 
-// APU
+//  ============================================================ 
+//                             OAM
+//  ============================================================
+
+#define OAM_ADDR        (*(volatile uint8_t*)0x2003)
+#define OAM_DATA        (*(volatile uint8_t*)0x2004)
+#define OAM_DMA         (*(volatile uint8_t*)0x4014)
+
+//  ============================================================ 
+//                           Sprites
+//  ============================================================
+
+typedef struct {
+    uint8_t y;
+    uint8_t tile_ID;
+    uint8_t attribute;
+    uint8_t x;
+} sprite_data_t;
+
+//  ============================================================ 
+//                             APU
+//  ============================================================
+
+// different behaviour on write and read
 #define APU_STATUS      (*(volatile uint8_t*)0x4015)
+
+/* @brief 7bit: Interrupt inhibit flag | 6bit: 0: Freerun 1: Expect external synchronization*/
+#define FRAME_COUNTER   (*(volatile uint8_t*)0x4017)
+
+#define SQ1_VOL         (*(volatile uint8_t*)0x4000)
+#define SQ1_SWEEP       (*(volatile uint8_t*)0x4001)
+#define SQ1_LO          (*(volatile uint8_t*)0x4002)
+#define SQ1_HI          (*(volatile uint8_t*)0x4003)
+
+#define SQ2_VOL         (*(volatile uint8_t*)0x4004)
+#define SQ2_SWEEP       (*(volatile uint8_t*)0x4005)
+#define SQ2_LO          (*(volatile uint8_t*)0x4006)
+#define SQ2_HI          (*(volatile uint8_t*)0x4007)
+
+#define TRI_LINEAR      (*(volatile uint8_t*)0x4008)
+#define TRI_UNUSED      (*(volatile uint8_t*)0x4009)    // Unused
+#define TRI_LO          (*(volatile uint8_t*)0x400A)
+#define TRI_HI          (*(volatile uint8_t*)0x400B)
+
+#define NOISE_VOL       (*(volatile uint8_t*)0x400C)
+#define NOISE_UNUSED    (*(volatile uint8_t*)0x400D)    // Unused
+#define NOISE_LO        (*(volatile uint8_t*)0x400E)
+#define NOISE_HI        (*(volatile uint8_t*)0x400F)
+
+#define DMC_FREQ        (*(volatile uint8_t*)0x4010)
+#define DMC_RAW         (*(volatile uint8_t*)0x4011)
+#define DMC_START       (*(volatile uint8_t*)0x4012)
+#define DMC_LEN         (*(volatile uint8_t*)0x4013)
+
+//  ============================================================ 
+//                             APU
+//  ============================================================
 
 #define CONTROLLER_STROBE  (*(volatile uint8_t*)0x4016)
 
 /* @brief Player 1 controller port */
-#define CONTROLLER_PORT_1 (*(volatile uint8_t*)0x4016)
+#define JOY1 (*(volatile uint8_t*)0x4016)
 
 /* @brief Player 2 controller port */
-#define CONTROLLER_PORT_2 (*(volatile uint8_t*)0x4017)
+#define JOY2 (*(volatile uint8_t*)0x4017)
 
 extern uint8_t controller;
 extern uint8_t controller_prev;

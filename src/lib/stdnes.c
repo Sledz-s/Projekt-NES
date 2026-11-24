@@ -9,7 +9,7 @@ uint8_t read_controller_1(void) {
     CONTROLLER_STROBE = 0;
 
     for (uint8_t i = 0; i < 8; i++) {
-        buttons |= (CONTROLLER_PORT_1 & 1) << i;
+        buttons |= (JOY1 & 1) << i;
     }
 
     return buttons;

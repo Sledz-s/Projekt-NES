@@ -14,14 +14,7 @@ volatile uint8_t update_palette = 0;
 
 uint8_t oam_buffer[256] __attribute__((aligned(256)));
 
-struct oam_data_t {
-    uint8_t y;
-    uint8_t tile_ID;
-    uint8_t attribute;
-    uint8_t x;
-};
-
-struct oam_data_t *oam = (struct oam_data_t *)oam_buffer;
+sprite_data_t *oam = (sprite_data_t *)oam_buffer;
 
 //  ===================================================
 // PPU stuff
@@ -72,6 +65,7 @@ void Reset(void) {
     
     oam_clear();
 
+    // RAW OAM writes
     oam[0].y = 19;
     oam[0].tile_ID = 0x02;
     oam[0].attribute = 0;
