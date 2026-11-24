@@ -7,6 +7,13 @@
 #define ZERO_PAGE_START ((volatile uint8_t*)0x0000)
 
 //  ============================================================ 
+//                             Stuff
+//  ============================================================ 
+
+typedef void (*GameStateFunc)(void);
+
+
+//  ============================================================ 
 //                             PPU
 //  ============================================================
 
@@ -119,12 +126,15 @@ extern uint8_t controller_prev;
 #define PRESS_A         (controller & BUTTON_A)
 #define PRESS_B         (controller & BUTTON_B)
 
-#define PRESS_START   (controller & BUTTON_START)
+#define PRESS_START     (controller & BUTTON_START)
 
 #define PRESSED_LEFT    (PRESS_LEFT     && !(controller_prev & PRESS_LEFT))
 #define PRESSED_RIGHT   (PRESS_RIGHT    && !(controller_prev & PRESS_RIGHT))
 #define PRESSED_UP      (PRESS_UP       && !(controller_prev & PRESS_UP))
 #define PRESSED_DOWN    (PRESS_DOWN     && !(controller_prev & PRESS_DOWN))
+
+#define PRESSED_START   (PRESS_START    && !(controller_prev & PRESS_START))
+
 
 #define PRESSED_A \
     ((controller & BUTTON_A) && !(controller_prev & BUTTON_A))
